@@ -133,9 +133,10 @@ jobs:
           DOT_CONFIG: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.config
         run: |
           cd immortalwrt
-          # 配置文件在仓库根目录，需返回上一级调用
           mv ../$DOT_CONFIG .config
           make defconfig
+          #强制移除小米3G‑V2编译选项，杜绝它编译故障dts
+          sed -i '/CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_xiaomi_mi-router-3g-v2=y/d' .config
 
       - name: 下载编译资源
         run: |
