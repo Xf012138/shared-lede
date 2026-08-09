@@ -135,9 +135,10 @@ jobs:
           cd immortalwrt
           mv ../$DOT_CONFIG .config
           make defconfig
-          #强制移除小米3G‑V2编译选项，杜绝它编译故障dts
+          # 关闭3g‑v2配置
           sed -i '/CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_xiaomi_mi-router-3g-v2=y/d' .config
-
+          # 直接删除损坏的dts源码，从根源阻止编译
+          rm -f target/linux/ramips/dts/mt7621_xiaomi_mi-router-3g-v2.dts
       - name: 下载编译资源
         run: |
           cd immortalwrt
