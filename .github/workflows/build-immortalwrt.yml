@@ -106,9 +106,8 @@ jobs:
           mv tmp-taskplan/luci-app-taskplan .
           rm -rf tmp-taskplan
           
-          # 3. 终端 TTYD、UA2F
-          git clone --depth 1 https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
-          git clone --depth 1 https://github.com/zmirnov/ua2f.git ua2f
+          # 3. UA2F （修正为官方维护仓库）
+          git clone --depth 1 https://github.com/Zxilly/UA2F.git ua2f
 
       - name: 升级feeds
         run: |
