@@ -93,23 +93,22 @@ jobs:
 
       - name: 下载源码与插件
         run: |
-          export GH_PROXY="https://mirror.ghproxy.com/"
           # 指定拉取 openwrt-21.02 分支，浅克隆减少体积
-          git clone -b openwrt-21.02 --single-branch --depth 1 ${GH_PROXY}https://github.com/immortalwrt/immortalwrt.git
+          git clone -b openwrt-21.02 --single-branch --depth 1 https://github.com/immortalwrt/immortalwrt.git
           cd immortalwrt/package
           
           # 1. Argon 主题与配置插件
-          git clone --depth 1 ${GH_PROXY}https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
-          git clone --depth 1 ${GH_PROXY}https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
+          git clone --depth 1 https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
+          git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
           
           # 2. 定时任务插件（处理目录嵌套）
-          git clone --depth 1 ${GH_PROXY}https://github.com/sirpdboy/luci-app-taskplan.git tmp-taskplan
+          git clone --depth 1 https://github.com/sirpdboy/luci-app-taskplan.git tmp-taskplan
           mv tmp-taskplan/luci-app-taskplan .
           rm -rf tmp-taskplan
           
           # 3. 终端 TTYD、UA2F
-          git clone --depth 1 ${GH_PROXY}https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
-          git clone --depth 1 ${GH_PROXY}https://github.com/zmirnov/ua2f.git ua2f
+          git clone --depth 1 https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
+          git clone --depth 1 https://github.com/zmirnov/ua2f.git ua2f
 
       - name: 升级feeds
         run: |
