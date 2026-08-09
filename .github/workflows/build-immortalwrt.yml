@@ -70,7 +70,8 @@ jobs:
       TEMP_PREFIX: temp
       DEPLOYDIR: preset-immortalwrt
     steps:
-
+      - name: 清理旧文件
+        run: rm -rf immortalwrt
       - name: 初始空间情况
         run: |
           df -h
