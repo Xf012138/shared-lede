@@ -38,7 +38,7 @@ def produce_temp_workfiles(headers: dict, model: str, temp: str):
     shutil.copyfile(num + '.modify.sh', tm1 := temp + '.modify.sh')
     if model == 'xiaomi-4a-gigabit' or model == 'xiaomi-4a-3g-v2':
         with open(tm1, 'a') as f:
-            f.write('\n. extra-files/modify-xiaomi-router-4a-3g-v2.sh\n')
+            f.write('\n. ../extra-files/modify-xiaomi-router-4a-3g-v2.sh\n')
     return tc1, tc2, tm1
 
 
