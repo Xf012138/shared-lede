@@ -6,7 +6,6 @@
 # 第三方插件源码
 # ==============================================
 
-# UA2F（UA伪装）
-git clone --depth 1 https://github.com/Zxilly/UA2F.git package/UA2F
+
 # rkp‑ipid（IP ID 随机化）
 git clone --depth 1 https://github.com/CHN-beta/rkp-ipid.git package/rkp-ipid
