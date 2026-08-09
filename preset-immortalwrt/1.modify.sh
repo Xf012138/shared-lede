@@ -6,10 +6,6 @@
 # ==============================================
 
 # 完整克隆（不能使用depth 1，否则无法切换旧提交）
-git clone https://github.com/Zxilly/UA2F.git package/UA2F
-cd package/UA2F
-git checkout 7d42096
-cd ../..
-
-# rkp‑ipid照常
+git clone --depth 1 https://github.com/Zxilly/UA2F.git package/UA2F
+sed -i '/cmake_policy.*CMP0135/d' package/UA2F/CMakeLists.txt
 git clone --depth 1 https://github.com/CHN-beta/rkp-ipid.git package/rkp-ipid
