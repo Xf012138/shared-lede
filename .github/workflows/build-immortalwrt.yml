@@ -92,14 +92,22 @@ jobs:
           python3 extra-files/transit.py
 
       - name: 下载源码与插件
-        env:
-          CLONE_SH: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.clone.sh
         run: |
-          chmod +x $CLONE_SH
-          $CLONE_SH
+          export GH_PROXY="https://mirror.ghproxy.com/"
+          # 指定拉取 openwrt-21.02 分支（和原脚本注释保持一致，避免分支不兼容）
+          git clone -b openwrt-21.02 --single-branch ${GH_PROXY}https://github.com/immortalwrt/immortalwrt.git
+          cd immortalwrt/package
+          # 主题与配置插件
+          git clone ${GH_PROXY}https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
+          git clone ${GH_PROXY}https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
+          # 定时任务、终端、UA2F
+          git clone ${GH_PROXY}https://github.com/sirpdboy/luci-app-taskplan.git luci-app-taskplan
+          git clone ${GH_PROXY}https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
+          git clone ${GH_PROXY}https://github.com/zmirnov/ua2f.git ua2f
 
       - name: 升级feeds
         run: |
+          cd immortalwrt
           ./scripts/feeds update -a
           ./scripts/feeds install -a
 
@@ -107,6 +115,7 @@ jobs:
         env:
           MODIFY_SH: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.modify.sh
         run: |
+          cd immortalwrt
           chmod +x $MODIFY_SH
           $MODIFY_SH
           ${{ inputs.lan_ipad != '' }} && \
@@ -118,19 +127,23 @@ jobs:
         env:
           DOT_CONFIG: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.config
         run: |
+          cd immortalwrt
           mv $DOT_CONFIG .config
           make defconfig
 
       - name: 下载编译资源
         run: |
+          cd immortalwrt
           make download -j8 || make download -j1 V=s
 
       - name: 编译
         run: |
+          cd immortalwrt
           make -j$(nproc) || make -j1 V=s
 
       - name: 整理固件目录
         run: |
+          cd immortalwrt
           mkdir -p collected_firmware/packages
           rm -rf $(find bin/targets/ -type d -name 'packages')
           cp $(find bin/targets/ -type f) collected_firmware
