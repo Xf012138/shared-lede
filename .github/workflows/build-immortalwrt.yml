@@ -92,11 +92,16 @@ jobs:
           python3 extra-files/transit.py
 
       - name: 下载源码与插件
-        env:
-          CLONE_SH: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.clone.sh
         run: |
-          chmod +x $CLONE_SH
-          $CLONE_SH
+          export GH_PROXY="https://mirror.ghproxy.com/"
+
+          git clone ${GH_PROXY}https://github.com/immortalwrt/immortalwrt.git
+          cd immortalwrt/package
+
+          git clone ${GH_PROXY}https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
+          git clone ${GH_PROXY}https://github.com/sirpdboy/luci-app-taskplan.git luci-app-taskplan
+          git clone ${GH_PROXY}https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
+          git clone ${GH_PROXY}https://github.com/zmirnov/ua2f.git ua2f
 
       - name: 升级feeds
         run: |
