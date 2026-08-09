@@ -106,8 +106,7 @@ jobs:
           mv tmp-taskplan/luci-app-taskplan .
           rm -rf tmp-taskplan
           
-          # 3. UA2F （修正为官方维护仓库）
-          git clone --depth 1 https://github.com/Zxilly/UA2F.git ua2f
+
 
       - name: 升级feeds
         run: |
