@@ -94,16 +94,23 @@ jobs:
       - name: 下载源码与插件
         run: |
           export GH_PROXY="https://mirror.ghproxy.com/"
-          # 指定拉取 openwrt-21.02 分支（和原脚本注释保持一致，避免分支不兼容）
-          git clone -b openwrt-21.02 --single-branch ${GH_PROXY}https://github.com/immortalwrt/immortalwrt.git
+          # 指定拉取 openwrt-21.02 分支，浅克隆减少体积
+          git clone -b openwrt-21.02 --single-branch --depth 1 ${GH_PROXY}https://github.com/immortalwrt/immortalwrt.git
           cd immortalwrt/package
-          # 主题与配置插件
-          git clone ${GH_PROXY}https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
-          git clone ${GH_PROXY}https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
-          # 定时任务、终端、UA2F
-          git clone ${GH_PROXY}https://github.com/sirpdboy/luci-app-taskplan.git luci-app-taskplan
-          git clone ${GH_PROXY}https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
-          git clone ${GH_PROXY}https://github.com/zmirnov/ua2f.git ua2f
+          
+          # 1. Argon 主题与配置插件
+          git clone --depth 1 ${GH_PROXY}https://github.com/jerrykuku/luci-theme-argon.git luci-theme-argon
+          git clone --depth 1 ${GH_PROXY}https://github.com/jerrykuku/luci-app-argon-config.git luci-app-argon-config
+          
+          # 2. 定时任务插件（处理目录嵌套）
+          git clone --depth 1 ${GH_PROXY}https://github.com/sirpdboy/luci-app-taskplan.git tmp-taskplan
+          mv tmp-taskplan/luci-app-taskplan .
+          rm -rf tmp-taskplan
+          
+          # 3. 终端 TTYD、UA2F
+          git clone --depth 1 ${GH_PROXY}https://github.com/OpenWrt-ttyd/luci-app-ttyd.git luci-app-ttyd
+          git clone --depth 1 ${GH_PROXY}https://github.com/zmirnov/ua2f.git ua2f
+
       - name: 升级feeds
         run: |
           cd immortalwrt
@@ -115,8 +122,9 @@ jobs:
           MODIFY_SH: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.modify.sh
         run: |
           cd immortalwrt
-          chmod +x $MODIFY_SH
-          $MODIFY_SH
+          # 配置脚本在仓库根目录，需返回上一级调用
+          chmod +x ../$MODIFY_SH
+          ../$MODIFY_SH
           ${{ inputs.lan_ipad != '' }} && \
             sed -i "/lan) ipad=/clan) ipad=\${ipaddr:-\"${{ inputs.lan_ipad }}\"} ;;" \
               package/base-files/files/bin/config_generate
@@ -127,7 +135,8 @@ jobs:
           DOT_CONFIG: ${{ env.DEPLOYDIR }}/${{ env.TEMP_PREFIX }}.config
         run: |
           cd immortalwrt
-          mv $DOT_CONFIG .config
+          # 配置文件在仓库根目录，需返回上一级调用
+          mv ../$DOT_CONFIG .config
           make defconfig
 
       - name: 下载编译资源
@@ -143,11 +152,12 @@ jobs:
       - name: 整理固件目录
         run: |
           cd immortalwrt
-          mkdir -p collected_firmware/packages
+          # 直接输出到仓库根目录，匹配后续上传路径
+          mkdir -p ../collected_firmware/packages
           rm -rf $(find bin/targets/ -type d -name 'packages')
-          cp $(find bin/targets/ -type f) collected_firmware
-          cp $(find bin/packages/ -type f -name '*.ipk') collected_firmware/packages
-          cd collected_firmware
+          cp $(find bin/targets/ -type f) ../collected_firmware
+          cp $(find bin/packages/ -type f -name '*.ipk') ../collected_firmware/packages
+          cd ../collected_firmware
           zip -r allfiles.zip *
           cd packages
           zip -r ../packages.zip *
